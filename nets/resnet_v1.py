@@ -200,21 +200,21 @@ def resnet_v1(inputs,
                 end_points = slim.utils.convert_collection_to_dict(end_points_collection)
 
                 # end_points['pool2'] = end_points['resnet_v1_50/pool1/MaxPool:0']
-                # try:
-                #     end_points['pool3'] = end_points['resnet_v1_50/block1']
-                #     end_points['pool4'] = end_points['resnet_v1_50/block2']
-                # except:
-                #     end_points['pool3'] = end_points['Detection/resnet_v1_50/block1']
-                #     end_points['pool4'] = end_points['Detection/resnet_v1_50/block2']
-                # end_points['pool5'] = net
-
                 try:
-                    end_points['pool3'] = end_points['resnet_v1_152/block1']
-                    end_points['pool4'] = end_points['resnet_v1_152/block2']
+                    end_points['pool3'] = end_points['resnet_v1_50/block1']
+                    end_points['pool4'] = end_points['resnet_v1_50/block2']
                 except:
-                    end_points['pool3'] = end_points['Detection/resnet_v1_152/block1']
-                    end_points['pool4'] = end_points['Detection/resnet_v1_152/block2']
+                    end_points['pool3'] = end_points['Detection/resnet_v1_50/block1']
+                    end_points['pool4'] = end_points['Detection/resnet_v1_50/block2']
                 end_points['pool5'] = net
+
+                # try:
+                #     end_points['pool3'] = end_points['resnet_v1_152/block1']
+                #     end_points['pool4'] = end_points['resnet_v1_152/block2']
+                # except:
+                #     end_points['pool3'] = end_points['Detection/resnet_v1_152/block1']
+                #     end_points['pool4'] = end_points['Detection/resnet_v1_152/block2']
+                # end_points['pool5'] = net
 
                 # if global_pool:
                 #     # Global average pooling.
@@ -249,9 +249,9 @@ def resnet_v1_50(inputs,
         resnet_utils.Block(
             'block1', bottleneck, [(256, 64, 1)] * 2 + [(256, 64, 2)]),
         resnet_utils.Block(
-            'block2', bottleneck, [(512, 128, 1)] * 3 + [(512, 128, 2)]),
+            'block2', bottleneck, [(512, 128, 1)] * 6 + [(512, 128, 2)]),
         resnet_utils.Block(
-            'block3', bottleneck, [(1024, 256, 1)] * 5 + [(1024, 256, 2)]),
+            'block3', bottleneck, [(1024, 256, 1)] * 15 + [(1024, 256, 2)]),
         resnet_utils.Block(
             'block4', bottleneck, [(2048, 512, 1)] * 3)
     ]
