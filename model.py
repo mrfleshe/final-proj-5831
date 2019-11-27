@@ -70,13 +70,21 @@ def model(images, weight_decay=1e-5, is_training=True):
                     g[i] = slim.conv2d(h[i], num_outputs[i], 3)
                 print('Shape of h_{} {}, g_{} {}'.format(i, h[i].shape, i, g[i].shape))
 
-            # here we use a slightly different way for regression part,
-            # we first use a sigmoid to limit the regression range, and also
+            # # here we use a slightly different way for regression part,
+            # # we first use a sigmoid to limit the regression range, and also
+            # # this is do with the angle map
+            # F_score = slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None)
+            # # 4 channel of axis aligned bbox and 1 channel rotation angle
+            # geo_map = slim.conv2d(g[3], 4, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None) * FLAGS.text_scale
+            # angle_map = (slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None) - 0.5) * np.pi/2 # angle is between [-45, 45]
+            # F_geometry = tf.concat([geo_map, angle_map], axis=-1)
+
+            # using relu to try to speed things up
             # this is do with the angle map
-            F_score = slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None)
+            F_score = slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.relu, normalizer_fn=None)
             # 4 channel of axis aligned bbox and 1 channel rotation angle
-            geo_map = slim.conv2d(g[3], 4, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None) * FLAGS.text_scale
-            angle_map = (slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.sigmoid, normalizer_fn=None) - 0.5) * np.pi/2 # angle is between [-45, 45]
+            geo_map = slim.conv2d(g[3], 4, 1, activation_fn=tf.nn.relu, normalizer_fn=None) * FLAGS.text_scale
+            angle_map = (slim.conv2d(g[3], 1, 1, activation_fn=tf.nn.relu, normalizer_fn=None) - 0.5) * np.pi/2 # angle is between [-45, 45]
             F_geometry = tf.concat([geo_map, angle_map], axis=-1)
 
     return F_score, F_geometry
