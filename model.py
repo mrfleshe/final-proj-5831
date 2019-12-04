@@ -92,6 +92,25 @@ def model(images, weight_decay=1e-5, is_training=True):
 
     return F_score, F_geometry
 
+#================added loss=========================
+def balanced_cross_entropy(y_true_cls, y_pred_cls):
+  beta = .5
+  def convert_to_logits(y_pred_cls):
+
+      y_pred_cls = tf.clip_by_value(y_pred_cls, tf.keras.backend.epsilon(), 1 - tf.keras.backend.epsilon())
+
+      return tf.log(y_pred_cls / (1 - y_pred_cls))
+
+  def bloss(y_true_cls, y_pred_cls):
+    y_pred_cls = convert_to_logits(y_pred_cls)
+    pos_weight = beta / (1 - beta)
+    loss = tf.nn.weighted_cross_entropy_with_logits(logits=y_pred_cls, targets=y_true_cls, pos_weight=pos_weight)
+
+    # or reduce_sum and/or axis=-1
+    return tf.reduce_mean(loss * (1 - beta))
+
+  return bloss(y_true_cls, y_pred_cls)
+#===================================================
 
 def dice_coefficient(y_true_cls, y_pred_cls,
                      training_mask):
@@ -144,4 +163,4 @@ def loss(y_true_cls, y_pred_cls,
     tf.summary.scalar('geometry_theta', tf.reduce_mean(L_theta * y_true_cls * training_mask))
     L_g = L_AABB + 20 * L_theta
 
-    return tf.reduce_mean(L_g * y_true_cls * training_mask) + classification_loss
+    return tf.reduce_mean(L_g * y_true_cls * training_mask) + classification_loss + balanced_cross_entropy(y_true_cls, y_pred_cls)
