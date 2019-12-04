@@ -249,7 +249,7 @@ def resnet_v1_50(inputs,
         resnet_utils.Block(
             'block1', bottleneck, [(256, 64, 1)] * 2 + [(256, 64, 2)]),
         resnet_utils.Block(
-            'block2', bottleneck, [(512, 128, 1)] * 5 + [(512, 128, 2)]),
+            'block2', bottleneck, [(512, 128, 1)] * 3 + [(512, 128, 2)]),
         resnet_utils.Block(
             'block3', bottleneck, [(1024, 256, 1)] * 5 + [(1024, 256, 2)]),
         resnet_utils.Block(
