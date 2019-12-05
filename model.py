@@ -144,7 +144,8 @@ def loss(y_true_cls, y_pred_cls,
     :param training_mask: mask used in training, to ignore some text annotated by ###
     :return:
     '''
-    classification_loss = dice_coefficient(y_true_cls, y_pred_cls, training_mask)
+    #classification_loss = dice_coefficient(y_true_cls, y_pred_cls, training_mask)
+    classification_loss = balanced_cross_entropy(y_true_cls, y_pred_cls)
     # scale classification loss to match the iou loss part
     classification_loss *= 0.01
 
@@ -163,4 +164,4 @@ def loss(y_true_cls, y_pred_cls,
     tf.summary.scalar('geometry_theta', tf.reduce_mean(L_theta * y_true_cls * training_mask))
     L_g = L_AABB + 20 * L_theta
 
-    return tf.reduce_mean(L_g * y_true_cls * training_mask) + classification_loss + balanced_cross_entropy(y_true_cls, y_pred_cls)
+    return tf.reduce_mean(L_g * y_true_cls * training_mask) + classification_loss
